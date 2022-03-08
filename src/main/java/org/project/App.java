@@ -5,7 +5,8 @@ import java.util.*;
 public class App {
     private static final Scanner KB = new Scanner(System.in);
     private static List<Movie> movieList;
-    private static HashMap<Integer, Movie> movieHashMap;
+    private static Map<Integer, Movie> movieHashMap;
+    private static Map<String, List<String>> treeMap;
 
     public static void main( String[] args ) {
         App app = new App();
@@ -17,8 +18,10 @@ public class App {
         System.out.println("Project part 1 - CA5");
         movieList = new ArrayList<>();
         movieHashMap = new HashMap<>();
+        treeMap = new TreeMap<>();
         populateArrayList(movieList);
         populateHashMap(movieList, movieHashMap);
+        populateTreeMap(movieList, treeMap);
         menu();
     }
 
@@ -53,7 +56,7 @@ public class App {
                     add("Sung Kang");
                     add("Lucas Black");
                     add("Nathalie Kelley");
-                    add("brian tee");
+                    add("Brian Tee");
                 }}
         ));
         list.add(new Movie(
@@ -136,28 +139,31 @@ public class App {
         ));
     }
 
-    public void populateHashMap(List<Movie> list, HashMap <Integer, Movie> map) {
+    public void populateHashMap(List<Movie> list, Map<Integer, Movie> map) {
         int index = 0;
-
         for (Movie m : list) {
             map.put(++index ,m);
         }
-//        for (int i = 0; i < list.size(); i++) {
-//      System.out.println(i);
-//            map.put(i ,list.get(i));
-//        }
+    }
+
+    public void populateTreeMap(List<Movie> list, Map<String, List<String>> map) {
+        for (Movie m : list) {
+            map.put(m.getTitle(), m.getActors());
+        }
     }
 
     private void menu() {
         final String MENU = "\n*** MENU ***\n"
                 + "1. Display all Movies\n"
                 + "2. Find Movie by Key\n"
-                + "3. Exit\n"
-                + "Enter Option [1, 2]";
+                + "3. Display all Actors in TreeMap\n"
+                + "4. Exit\n"
+                + "Enter Option [1, 4]";
 
         final int DISPLAY_LIST  = 1;
         final int FIND_IN_MAP   = 2;
-        final int EXIT          = 3;
+        final int DISPLAY_MAP   = 3;
+        final int EXIT          = 4;
 
         int option = 0;
 
@@ -175,6 +181,11 @@ public class App {
                     case FIND_IN_MAP:
                         System.out.println("Find Movie by Key");
                         findByKey();
+                        break;
+
+                    case DISPLAY_MAP:
+                        System.out.println("Display all Actors in TreeMap");
+                        displayMap(treeMap);
                         break;
 
                     case EXIT:
@@ -223,8 +234,7 @@ public class App {
         System.out.println(sb);
     }
 
-    public void findByKey() {
-        List<Movie> list = new ArrayList<>();
+    private void findByKey() {
         StringBuilder sb = new StringBuilder();
         String keyStr = null;
         int titleTab = -40;
@@ -268,6 +278,13 @@ public class App {
 
         } catch (InputMismatchException | NumberFormatException e) {
             System.out.print("Invalid Input - Key has to a whole number");
+        }
+    }
+
+    private <K, V> void displayMap(Map<K, V> map) {
+        int tab1 = -40;
+        for (Map.Entry<K, V> entry: map.entrySet()) {
+            System.out.printf("Key: %" + tab1 + "s Value: " + entry.getValue() + "%n", entry.getKey());
         }
     }
 }
