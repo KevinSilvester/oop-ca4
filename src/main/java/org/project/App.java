@@ -1,9 +1,15 @@
 package org.project;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
 
 public class App {
+    private static final Scanner KB = new Scanner(System.in);
+    private static List<Movie> movieList;
+
     public static void main( String[] args ) {
         App app = new App();
         app.start();
@@ -12,8 +18,9 @@ public class App {
     public void start() {
         System.out.println("Hello World");
         System.out.println("Project part 1 - CA5");
-        List<Movie> movieList = new ArrayList<>();
+        movieList = new ArrayList<>();
         initialize(movieList);
+        menu();
     }
 
     private void initialize(List<Movie> list) {
@@ -128,5 +135,74 @@ public class App {
                     add("Laurie Metcalf");
                 }}
         ));
+    }
+
+    private void menu() {
+        final String MENU = "\n*** MENU ***\n"
+                + "1. Display all Movies\n"
+                + "2. Exit\n"
+                + "Enter Option [1, 2]";
+
+        final int DISPLAY_APP   = 1;
+        final int EXIT          = 2;
+
+        boolean valid = true;
+        int option = 0;
+
+        do {
+            System.out.println("\n" + MENU);
+            try {
+                String usersInput = KB.nextLine();
+                option = Integer.parseInt(usersInput);
+                switch (option) {
+                    case DISPLAY_APP:
+                        System.out.println("Display ALL Movies");
+                        displayList(movieList);
+                        break;
+
+                    case EXIT:
+                        System.out.println("Exit Menu option chosen");
+                        break;
+
+                    default:
+                        System.out.print("Invalid option - please enter number in range");
+                        break;
+                }
+
+            } catch (InputMismatchException | NumberFormatException e) {
+                System.out.print("Invalid option - please enter number in range");
+            }
+        } while (option != EXIT);
+    }
+
+    private void displayList(List<Movie> list) {
+        StringBuilder sb = new StringBuilder();
+        int titleTab = -40;
+        int yearTab = -7;
+        int boxOfficeTab = -12;
+        int directorTab = -16;
+        int actorsTab = -18;
+        System.out.println(
+            "\n============================================\n"
+            + "\t\t\tMovie ArrayList\n"
+            + "============================================");
+        System.out.printf(
+                "%n" +
+                "%" + titleTab + "s" +
+                "%" + yearTab + "s" +
+                "%" + boxOfficeTab + "s" +
+                "%" + directorTab + "s" +
+                "%" + actorsTab + "s%n",
+                "Title", "Year", "BoxOffice", "Director", "Actors");
+        for (Movie m: list) {
+            sb.append(String.format("%" + titleTab + "s", m.getTitle()));
+            sb.append(String.format("%" + yearTab + "d", m.getYear()));
+            sb.append(String.format("%" + boxOfficeTab + ".1f", m.getBoxOffice()));
+            sb.append(String.format("%" + directorTab + "s", m.getDirector()));
+            sb.append(String.format("%" + actorsTab + "s", m.getActors()));
+            sb.append(String.format("%n"));
+            //sb.append(String.format("%" + titleTab + "s%-7d%-7.1f%-7s%n", m.getTitle(), m.getYear(), m.getBoxOffice(), m.getDirector()));
+        }
+        System.out.println(sb);
     }
 }

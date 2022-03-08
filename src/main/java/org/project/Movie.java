@@ -7,14 +7,14 @@ public class Movie {
     private String title;
     private int year;
     private double boxOffice;
-    private String directors;
+    private String director;
     private List<String> actors;
 
-    public Movie(String title, int year, double boxOffice, String directors, List<String> actors) {
+    public Movie(String title, int year, double boxOffice, String director, List<String> actors) {
         this.title = title;
         this.year = year;
         this.boxOffice = boxOffice;
-        this.directors = directors;
+        this.director = director;
         this.actors = actors;
     }
 
@@ -22,36 +22,36 @@ public class Movie {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public int getYear() {
         return year;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
     }
 
     public double getBoxOffice() {
         return boxOffice;
     }
 
-    public void setBoxOffice(double boxOffice) {
-        this.boxOffice = boxOffice;
-    }
-
-    public String getDirectors() {
-        return directors;
-    }
-
-    public void setDirectors(String directors) {
-        this.directors = directors;
+    public String getDirector() {
+        return director;
     }
 
     public List<String> getActors() {
         return actors;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public void setBoxOffice(double boxOffice) {
+        this.boxOffice = boxOffice;
+    }
+
+    public void setDirector(String director) {
+        this.director = director;
     }
 
     public void setActors(List<String> actors) {
