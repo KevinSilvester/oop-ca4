@@ -18,7 +18,7 @@ public class App {
         System.out.println("Project part 1 - CA5");
         movieList = new ArrayList<>();
         movieHashMap = new HashMap<>();
-        treeMap = new TreeMap<>();
+        treeMap = new TreeMap<>(new ComparatorMapKey());
         populateArrayList(movieList);
         populateHashMap(movieList, movieHashMap);
         populateTreeMap(movieList, treeMap);
