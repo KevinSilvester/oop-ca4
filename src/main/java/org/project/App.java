@@ -1,6 +1,5 @@
 package org.project;
 
-import java.sql.SQLOutput;
 import java.util.*;
 
 
@@ -10,6 +9,7 @@ public class App {
     private static Map<Integer, Movie> movieHashMap;
     private static Map<String, List<String>> treeMap;
     private static Queue<Movie> movieQueue;
+    private static Queue<Movie> movieSecondQueue;
 
     public static void main( String[] args ) {
         App app = new App();
@@ -21,12 +21,14 @@ public class App {
         System.out.println("Project part 1 - CA5");
         movieList = new ArrayList<>();
         movieHashMap = new HashMap<>();
-        treeMap = new TreeMap<>(new MapKeyComparator());
+        treeMap = new TreeMap<>(new MapKeyComparator(SortType.Ascending));
         movieQueue = new PriorityQueue<>(10, new YearComparator(SortType.Ascending));
+        movieSecondQueue = new PriorityQueue<>(10, new TwoFieldComparator(SortType.Ascending));
         populateArrayList(movieList);
         populateHashMap(movieList, movieHashMap);
         populateTreeMap(movieList, treeMap);
         populatePriorityQueue(movieList, movieQueue);
+        populatePriorityQueue(movieList, movieSecondQueue);
         menu();
     }
 
@@ -132,7 +134,7 @@ public class App {
                 }}
         ));
         list.add(new Movie(
-                "Toy Story",
+                null,
                 1995,
                 373.0,
                 "John Lasseter",
@@ -166,7 +168,7 @@ public class App {
                 + "1. Display all Movies\n"
                 + "2. Find Movie by Key\n"
                 + "3. Display all Actors in TreeMap\n"
-                + "4. PriorityQueue Sequence Simulation"
+                + "4. PriorityQueue Sequence Simulation\n"
                 + "5. PriorityQueue Two-Field Comparison\n"
                 + "6. Exit\n"
                 + "Enter Option [1, 6]";
@@ -212,6 +214,7 @@ public class App {
 
                     case PRIORITY_COMPARISON:
                         System.out.println("PriorityQueue Two-Field Comparison");
+                        displayQueue(movieSecondQueue);
                         break;
 
                     case EXIT:
@@ -282,6 +285,11 @@ public class App {
         } catch (InputMismatchException | NumberFormatException e) {
             System.out.print("Invalid Input - Key has to a whole number");
         }
+    }
+
+    private <K, V> void displayMap(Map<K, V> map) {
+        int tab1 = -40;
+        map.forEach((key, value) -> System.out.printf("Key: %" + tab1 + "s Value: " + value + "%n", key));
     }
 
     private void addThirdPriorityElements(Queue<Movie> queue) {
@@ -356,8 +364,8 @@ public class App {
            queue.remove().display();
     }
 
-    private <K, V> void displayMap(Map<K, V> map) {
-        int tab1 = -40;
-        map.forEach((key, value) -> System.out.printf("Key: %" + tab1 + "s Value: " + value + "%n", key));
+    private void displayQueue(Queue<Movie> queue) {
+        printTableTitle("Movie PriorityQueue");
+        queue.forEach(Movie::display);
     }
 }
