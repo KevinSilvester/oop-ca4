@@ -1,12 +1,15 @@
 package org.project;
 
+import java.sql.SQLOutput;
 import java.util.*;
+
 
 public class App {
     private static final Scanner KB = new Scanner(System.in);
     private static List<Movie> movieList;
     private static Map<Integer, Movie> movieHashMap;
     private static Map<String, List<String>> treeMap;
+    private static Queue<Movie> movieQueue;
 
     public static void main( String[] args ) {
         App app = new App();
@@ -18,10 +21,12 @@ public class App {
         System.out.println("Project part 1 - CA5");
         movieList = new ArrayList<>();
         movieHashMap = new HashMap<>();
-        treeMap = new TreeMap<>(new ComparatorMapKey());
+        treeMap = new TreeMap<>(new MapKeyComparator());
+        movieQueue = new PriorityQueue<>(10, new YearComparator(SortType.Ascending));
         populateArrayList(movieList);
         populateHashMap(movieList, movieHashMap);
         populateTreeMap(movieList, treeMap);
+        populatePriorityQueue(movieList, movieQueue);
         menu();
     }
 
@@ -142,7 +147,7 @@ public class App {
     public void populateHashMap(List<Movie> list, Map<Integer, Movie> map) {
         int index = 0;
         for (Movie m : list) {
-            map.put(++index ,m);
+            map.put(index++, m);
         }
     }
 
@@ -152,18 +157,26 @@ public class App {
         }
     }
 
+    public void populatePriorityQueue(List<Movie> list, final Queue<Movie> queue) {
+        queue.addAll(list);
+    }
+
     private void menu() {
         final String MENU = "\n*** MENU ***\n"
                 + "1. Display all Movies\n"
                 + "2. Find Movie by Key\n"
                 + "3. Display all Actors in TreeMap\n"
-                + "4. Exit\n"
-                + "Enter Option [1, 4]";
+                + "4. PriorityQueue Sequence Simulation"
+                + "5. PriorityQueue Two-Field Comparison\n"
+                + "6. Exit\n"
+                + "Enter Option [1, 6]";
 
-        final int DISPLAY_LIST  = 1;
-        final int FIND_IN_MAP   = 2;
-        final int DISPLAY_MAP   = 3;
-        final int EXIT          = 4;
+        final int DISPLAY_LIST = 1;
+        final int FIND_IN_MAP  = 2;
+        final int DISPLAY_MAP  = 3;
+        final int PRIORITY_SEQUENCE = 4;
+        final int PRIORITY_COMPARISON = 5;
+        final int EXIT         = 6;
 
         int option = 0;
 
@@ -188,6 +201,19 @@ public class App {
                         displayMap(treeMap);
                         break;
 
+                    case PRIORITY_SEQUENCE:
+                        System.out.println("PrioriQueue Sequence Simulation");
+                        addThirdPriorityElements(movieQueue);
+                        addSecondPriorityElements(movieQueue);
+                        removeAndDisplayElement(movieQueue);
+                        addTopPriorityElement(movieQueue);
+                        removeAllElements(movieQueue);
+                        break;
+
+                    case PRIORITY_COMPARISON:
+                        System.out.println("PriorityQueue Two-Field Comparison");
+                        break;
+
                     case EXIT:
                         System.out.println("Exit Menu option chosen");
                         break;
@@ -202,52 +228,43 @@ public class App {
         } while (option != EXIT);
     }
 
-    private void displayList(List<Movie> list) {
-        StringBuilder sb = new StringBuilder();
+    private void printTableTitle(String title) {
+        System.out.println(
+                "\n============================================\n"
+                + "\t\t\t" + title + "\n"
+                + "============================================");
+    }
+
+    private void printTableHeader(String optionalMessage) {
         int titleTab = -40;
         int yearTab = -7;
         int boxOfficeTab = -12;
-        int directorTab = -16;
+        int directorTab = -20;
         int actorsTab = -18;
 
-        System.out.println(
-            "\n============================================\n"
-            + "\t\t\tMovie ArrayList\n"
-            + "============================================");
+        if (optionalMessage != null)
+            System.out.println("\n" + optionalMessage);
+
         System.out.printf(
-                "%n" +
                 "%" + titleTab + "s" +
                 "%" + yearTab + "s" +
                 "%" + boxOfficeTab + "s" +
                 "%" + directorTab + "s" +
                 "%" + actorsTab + "s%n",
                 "Title", "Year", "BoxOffice", "Director", "Actors");
+    }
 
-        for (Movie m: list) {
-            sb.append(String.format("%" + titleTab + "s", m.getTitle()));
-            sb.append(String.format("%" + yearTab + "d", m.getYear()));
-            sb.append(String.format("%" + boxOfficeTab + ".1f", m.getBoxOffice()));
-            sb.append(String.format("%" + directorTab + "s", m.getDirector()));
-            sb.append(String.format("%" + actorsTab + "s", m.getActors()));
-            sb.append(String.format("%n"));
-        }
-        System.out.println(sb);
+    private void displayList(List<Movie> list) {
+        printTableTitle("Movie ArrayList");
+        printTableHeader(null);
+        list.forEach(Movie::display);
     }
 
     private void findByKey() {
-        StringBuilder sb = new StringBuilder();
         String keyStr = null;
-        int titleTab = -40;
-        int yearTab = -7;
-        int boxOfficeTab = -12;
-        int directorTab = -16;
-        int actorsTab = -18;
         int key = 0;
 
-        System.out.println(
-                "\n============================================\n"
-                + "\t\t\tFind by Key\n"
-                + "============================================");
+        printTableTitle("Find by Key");
 
         try {
             System.out.print("Enter a key: ");
@@ -256,22 +273,8 @@ public class App {
 
             Movie movie = movieHashMap.get(key);
             if (movie != null) {
-                System.out.println("*** Movie Found ***");
-                System.out.printf(
-                        "%" + titleTab + "s" +
-                        "%" + yearTab + "s" +
-                        "%" + boxOfficeTab + "s" +
-                        "%" + directorTab + "s" +
-                        "%" + actorsTab + "s%n",
-                        "Title", "Year", "BoxOffice", "Director", "Actors");
-
-                sb.append(String.format("%" + titleTab + "s", movie.getTitle()));
-                sb.append(String.format("%" + yearTab + "d", movie.getYear()));
-                sb.append(String.format("%" + boxOfficeTab + ".1f", movie.getBoxOffice()));
-                sb.append(String.format("%" + directorTab + "s", movie.getDirector()));
-                sb.append(String.format("%" + actorsTab + "s", movie.getActors()));
-                sb.append(String.format("%n"));
-                System.out.println(sb);
+                printTableHeader("*** Movie Found ***");
+                movie.display();
             } else {
                 System.out.println("Key does not match any Movie");
             }
@@ -281,10 +284,80 @@ public class App {
         }
     }
 
+    private void addThirdPriorityElements(Queue<Movie> queue) {
+        queue.add(new Movie(
+                "The Jungle Book",
+                1967,
+                378,
+                "Wolfgang Reitherman",
+                new ArrayList<String>() {{
+                    add("Phil Harris");
+                    add("Sebastian Cabot");
+                    add("George Sanders");
+                }}));
+
+        queue.add(new Movie(
+                "Home Alone",
+                1990,
+                476.7,
+                "Chris Columbus",
+                new ArrayList<String>() {{
+                    add("Macaulay Culkin");
+                    add("Joie Pesci");
+                    add("Daniel Stern");
+                }}));
+    }
+
+    private void addSecondPriorityElements(Queue<Movie> queue) {
+        queue.add(new Movie(
+                "I Am Legend",
+                2007,
+                585.4,
+                "Francis Lawrence",
+                new ArrayList<String>() {{
+                    add("Will Smith");
+                    add("Alice Braga");
+                    add("Charlie Tahan");
+                }}));
+
+        queue.add(new Movie(
+                "The Dark Knight",
+                2008,
+                1005,
+                "Christopher Nolan",
+                new ArrayList<String>() {{
+                    add("Christian Bale");
+                    add("Heath Ledger");
+                    add("Michael Caine");
+                }}));
+    }
+
+    private void removeAndDisplayElement(Queue<Movie> queue) {
+        printTableHeader("*** Removing Element ***");
+        queue.remove().display();
+    }
+
+    private void addTopPriorityElement(Queue<Movie> queue) {
+        queue.add(new Movie(
+                "The Matrix Resurrections",
+                2021,
+                156.6,
+                "Lana Wachowski",
+                new ArrayList<String>() {{
+                    add("Keanu Reeves");
+                    add("Laurence Fishburne");
+                    add("Carrie-Anne Moss");
+                }}));
+    }
+
+    private void removeAllElements(Queue<Movie> queue) {
+        printTableHeader("*** Clearing PriorityQueue ***");
+        while (!queue.isEmpty())
+           queue.remove().display();
+    }
+
     private <K, V> void displayMap(Map<K, V> map) {
         int tab1 = -40;
-        for (Map.Entry<K, V> entry: map.entrySet()) {
-            System.out.printf("Key: %" + tab1 + "s Value: " + entry.getValue() + "%n", entry.getKey());
-        }
+        map.forEach((key, value) -> System.out.printf("Key: %" + tab1 + "s Value: " + value + "%n", key));
     }
 }

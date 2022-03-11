@@ -3,7 +3,7 @@ package org.project;
 import java.util.List;
 import java.util.Objects;
 
-public class Movie {
+public class Movie implements Comparable<Movie> {
     private String title;
     private int year;
     private double boxOffice;
@@ -58,6 +58,23 @@ public class Movie {
         this.actors = actors;
     }
 
+    public void display() {
+        StringBuilder sb = new StringBuilder();
+        int titleTab = -40;
+        int yearTab = -7;
+        int boxOfficeTab = -12;
+        int directorTab = -20;
+        int actorsTab = -18;
+
+        sb.append(String.format("%" + titleTab + "s", this.getTitle()));
+        sb.append(String.format("%" + yearTab + "d", this.getYear()));
+        sb.append(String.format("%" + boxOfficeTab + ".1f", this.getBoxOffice()));
+        sb.append(String.format("%" + directorTab + "s", this.getDirector()));
+        sb.append(String.format("%" + actorsTab + "s", this.getActors()));
+        sb.append(String.format("%n"));
+        System.out.print(sb);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -69,5 +86,10 @@ public class Movie {
     @Override
     public int hashCode() {
         return Objects.hash(getTitle(), getYear());
+    }
+
+    @Override
+    public int compareTo(Movie o) {
+        return this.getTitle().compareTo(o.getTitle());
     }
 }
