@@ -7,7 +7,7 @@ public class App {
     private static final Scanner KB = new Scanner(System.in);
     private static List<Movie> movieList;
     private static Map<Integer, Movie> movieHashMap;
-    private static Map<String, List<String>> treeMap;
+    private static Map<String, List<String>> stringTreeMap;
     private static Queue<Movie> movieQueue;
     private static Queue<Movie> movieSecondQueue;
 
@@ -16,17 +16,17 @@ public class App {
         app.start();
     }
 
-    public void start() {
+    private void start() {
         System.out.println("Hello World");
         System.out.println("Project part 1 - CA5");
         movieList = new ArrayList<>();
         movieHashMap = new HashMap<>();
-        treeMap = new TreeMap<>(new MapKeyComparator(SortType.Ascending));
+        stringTreeMap = new TreeMap<>(new MapKeyComparator(SortType.Ascending));
         movieQueue = new PriorityQueue<>(10, new YearComparator(SortType.Ascending));
         movieSecondQueue = new PriorityQueue<>(10, new TwoFieldComparator(SortType.Ascending));
         populateArrayList(movieList);
         populateHashMap(movieList, movieHashMap);
-        populateTreeMap(movieList, treeMap);
+        populateTreeMap(movieList, stringTreeMap);
         populatePriorityQueue(movieList, movieQueue);
         populatePriorityQueue(movieList, movieSecondQueue);
         menu();
@@ -34,7 +34,7 @@ public class App {
 
     private void populateArrayList(List<Movie> list) {
        list.add(new Movie(
-               "The fast and the Furious",
+               "The Fast and the Furious",
                2001,
                207.3,
                "Rob Cohen",
@@ -134,7 +134,7 @@ public class App {
                 }}
         ));
         list.add(new Movie(
-                null,
+                "Toy Story",
                 1995,
                 373.0,
                 "John Lasseter",
@@ -146,20 +146,18 @@ public class App {
         ));
     }
 
-    public void populateHashMap(List<Movie> list, Map<Integer, Movie> map) {
+    private void populateHashMap(List<Movie> list, Map<Integer, Movie> map) {
         int index = 0;
         for (Movie m : list) {
             map.put(index++, m);
         }
     }
 
-    public void populateTreeMap(List<Movie> list, Map<String, List<String>> map) {
-        for (Movie m : list) {
-            map.put(m.getTitle(), m.getActors());
-        }
+    private void populateTreeMap(List<Movie> list, Map<String, List<String>> map) {
+        list.forEach(movie -> map.put(movie.getTitle(), movie.getActors()));
     }
 
-    public void populatePriorityQueue(List<Movie> list, final Queue<Movie> queue) {
+    private void populatePriorityQueue(List<Movie> list, final Queue<Movie> queue) {
         queue.addAll(list);
     }
 
@@ -200,11 +198,11 @@ public class App {
 
                     case DISPLAY_MAP:
                         System.out.println("Display all Actors in TreeMap");
-                        displayMap(treeMap);
+                        displayMap(stringTreeMap);
                         break;
 
                     case PRIORITY_SEQUENCE:
-                        System.out.println("PrioriQueue Sequence Simulation");
+                        System.out.println("PriorityQueue Sequence Simulation");
                         addThirdPriorityElements(movieQueue);
                         addSecondPriorityElements(movieQueue);
                         removeAndDisplayElement(movieQueue);

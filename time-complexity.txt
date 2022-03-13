@@ -1,22 +1,19 @@
-# OOP CA5
+Operations + Time Complexities
+--------------------------------
 
-### CA Part 1
-
-#### Operations + Time Complexities
-
-- ##### ArrayList
+- ArrayList
    - add: `O(1) or O(1)`
    - get: `O(1)`
 
-- ##### HashMap
+- HashMap
    - put: `O(1)`
    - get: `O(1)`
 
-- ##### TreeMap
+- TreeMap
    - put: `O(log n)`
    - get: `O(log n)`
 
-- ##### PriorityQueue
+- PriorityQueue
    - addAll: `O(n log n)` as the initial size of the underlying array was provided.
       - > https://stackoverflow.com/questions/47420638/time-complexity-of-java-priorityqueue-heap-insertion-of-n-elements
    - add: `O(n)`
