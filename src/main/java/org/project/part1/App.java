@@ -1,4 +1,9 @@
-package org.project;
+package org.project.part1;
+
+import org.project.part1.Comparators.MapKeyComparator;
+import org.project.part1.Comparators.TwoFieldComparator;
+import org.project.part1.Comparators.YearComparator;
+import org.project.part1.Enumerators.SortType;
 
 import java.util.*;
 

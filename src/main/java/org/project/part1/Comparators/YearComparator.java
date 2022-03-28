@@ -1,4 +1,7 @@
-package org.project;
+package org.project.part1.Comparators;
+
+import org.project.part1.Movie;
+import org.project.part1.Enumerators.SortType;
 
 import java.util.Comparator;
 

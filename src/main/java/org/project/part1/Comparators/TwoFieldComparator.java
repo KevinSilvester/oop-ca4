@@ -1,4 +1,7 @@
-package org.project;
+package org.project.part1.Comparators;
+
+import org.project.part1.Movie;
+import org.project.part1.Enumerators.SortType;
 
 import java.util.Comparator;
 
@@ -31,7 +34,6 @@ public class TwoFieldComparator implements Comparator<Movie> {
             }
             return 0;
         }
-        System.out.println(title1 + ", " + title2);
         return sortType.getValue() * title1.compareToIgnoreCase(title2);
     }
 }

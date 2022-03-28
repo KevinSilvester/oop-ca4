@@ -1,4 +1,4 @@
-package org.project;
+package org.project.part1;
 
 import java.util.List;
 import java.util.Objects;

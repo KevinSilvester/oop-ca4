@@ -1,4 +1,6 @@
-package org.project;
+package org.project.part2.Comparators;
+
+import org.project.part2.Enumerators.SortType;
 
 import java.util.Comparator;
 
