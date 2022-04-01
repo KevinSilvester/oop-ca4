@@ -10,7 +10,7 @@ public class MySqlDao {
    public Connection getConnection() throws DaoException {
       String driver = "com.mysql.cj.jdbc.Driver";
       String url = "jdbc:mysql://127.0.0.1:3306/oop_movie_db";
-      String username = "wsl1";
+      String username = "kevin";
       String password = "admin";
       Connection connection = null;
 

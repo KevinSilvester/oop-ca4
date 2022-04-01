@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Movie implements Comparable<Movie> {
+    private int id;
     private String title;
     private int year;
     private double boxOffice;

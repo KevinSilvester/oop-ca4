@@ -1,5 +1,6 @@
 package org.project.part2;
 
+import org.javatuples.Pair;
 import org.project.part2.Comparators.MapKeyComparator;
 import org.project.part2.Comparators.TwoFieldComparator;
 import org.project.part2.Comparators.YearComparator;
@@ -9,6 +10,7 @@ import org.project.part2.DTOs.Movie;
 import org.project.part2.Enumerators.SortType;
 import org.project.part2.Exceptions.DaoException;
 
+import java.sql.SQLOutput;
 import java.util.*;
 
 
@@ -140,7 +142,9 @@ public class App {
             + "5. PriorityQueue Two-Field Comparison\n"
             + "6. Display all Movies from Database\n"
             + "7. Find Movie by ID from Database\n"
-            + "8. Exit\n"
+            + "8. Delete Movie by ID from Database\n"
+            + "9. Add Movie to Database\n"
+            + "13. Exit\n"
             + "Enter Option [1, 8]: ";
 
       final int DISPLAY_LIST     = 1;
@@ -150,7 +154,9 @@ public class App {
       final int PRIORITY_COMPARISON = 5;
       final int DISPLAY_DB       = 6;
       final int FIND_IN_DB       = 7;
-      final int EXIT             = 8;
+      final int DELETE_IN_DB     = 8;
+      final int ADD_IN_DB        = 9;
+      final int EXIT             = 13;
 
       int option = 0;
 
@@ -199,6 +205,16 @@ public class App {
                   findById();
                   break;
 
+               case DELETE_IN_DB:
+                  System.out.println("\nDelete Movie by ID");
+                  deleteById();
+                  break;
+
+               case ADD_IN_DB:
+                  System.out.println("\nAdd Movie to Database");
+                  addMovie();
+                  break;
+
                case EXIT:
                   System.out.println("\nExit Menu option chosen");
                   break;
@@ -215,12 +231,13 @@ public class App {
 
    private void printTableTitle(String title) {
       System.out.println(
-            "\n============================================\n"
-                  + "\t\t\t" + title + "\n"
-                  + "============================================");
+            "\n============================================\n" +
+            "\t\t\t" + title + "\n" +
+            "============================================");
    }
 
-   private void printTableHeader(String optionalMessage) {
+   private void printTableHeader(String optionalMessage, boolean... showId) {
+      int idTab = -7;
       int titleTab = -40;
       int yearTab = -7;
       int boxOfficeTab = -12;
@@ -230,13 +247,23 @@ public class App {
       if (optionalMessage != null)
          System.out.println("\n" + optionalMessage);
 
-      System.out.printf(
-            "%" + titleTab + "s" +
-                  "%" + yearTab + "s" +
-                  "%" + boxOfficeTab + "s" +
-                  "%" + directorTab + "s" +
-                  "%" + actorsTab + "s%n",
-            "Title", "Year", "BoxOffice", "Director", "Actors");
+      if (showId.length > 0 && showId[0])
+         System.out.printf(
+               "%" + idTab + "s" +
+               "%" + titleTab + "s" +
+               "%" + yearTab + "s" +
+               "%" + boxOfficeTab + "s" +
+               "%" + directorTab + "s" +
+               "%" + actorsTab + "s%n",
+               "ID", "Title", "Year", "BoxOffice", "Director", "Actors");
+      else
+         System.out.printf(
+               "%" + titleTab + "s" +
+               "%" + yearTab + "s" +
+               "%" + boxOfficeTab + "s" +
+               "%" + directorTab + "s" +
+               "%" + actorsTab + "s%n",
+               "Title", "Year", "BoxOffice", "Director", "Actors");
    }
 
    private void displayList(List<Movie> list) {
@@ -338,14 +365,15 @@ public class App {
 
    private void displayDb() {
       try {
-         List<Movie> movies = IMovieDao.findAllMovies();
+         System.out.println("\nGetting All Movie...");
+         List<Pair<Integer, Movie>> movies = IMovieDao.findAllMovies();
 
-         if( movies.isEmpty() )
+         if (movies.isEmpty())
             System.out.println("No Movies found in Database");
          else {
             printTableTitle("Movies in Database");
-            printTableHeader(null);
-            movies.forEach(Movie::display);
+            printTableHeader(null, true);
+            movies.forEach(pair -> pair.getValue1().display(pair.getValue0()));
          }
       } catch (DaoException e) {
          System.out.println("Database Operation Failed! " + e);
@@ -358,9 +386,10 @@ public class App {
          String usersInput = KB.nextLine();
          int id = Integer.parseInt(usersInput);
 
+         System.out.println("\nFinding Movie...\n");
          Movie movie = IMovieDao.findMovieById(id);
 
-         if( movie != null ){
+         if (movie != null) {
             printTableHeader("Movie Found");
             movie.display();
          }
@@ -372,4 +401,98 @@ public class App {
          System.out.println("Database Operation Failed! " + e);
       }
    }
+
+   private void deleteById() {
+      try {
+         System.out.print("Enter Movie ID (number): ");
+         String usersInput = KB.nextLine();
+         int id = Integer.parseInt(usersInput);
+
+         Movie movie = IMovieDao.findMovieById(id);
+
+         if (movie == null)
+            System.out.println("Movie not found");
+         else {
+            System.out.println("\nDeleting Movie...\n");
+            IMovieDao.deleteMovieById(id);
+            System.out.println("Movie \"" + movie.getTitle() + "\" (id: " + id + ") has been deleted!");
+         }
+      } catch (InputMismatchException | NumberFormatException e) {
+         System.out.print("Invalid input - ID must be a number");
+      } catch (DaoException e) {
+         System.out.println("Database Operation Failed! " + e);
+      }
+   }
+
+   private void addMovie() {
+      try {
+         System.out.print("Enter Movie Title: ");
+         String title = KB.nextLine();
+
+         System.out.print("Enter Movie Year: ");
+         int year = Integer.parseInt(KB.nextLine());
+
+         System.out.print("Enter Movie BoxOffice (in millions eg. €20.2): €");
+         double boxOffice = Double.parseDouble(KB.nextLine());
+
+         System.out.print("Enter Movie Director: ");
+         String director = KB.nextLine();
+
+         System.out.print("Enter Movie Lead Actor: ");
+         String leadActor = KB.nextLine();
+
+         Movie movie = new Movie(title, year, boxOffice, director, leadActor);
+
+         System.out.println("\nAdding Movie...\n");
+         IMovieDao.addMovie(movie);
+         System.out.println("Movie \"" + title + "\" has been added!\n");
+      } catch (InputMismatchException | NumberFormatException e) {
+         System.out.print("Invalid input - BoxOffice and Year must be a number");
+      } catch (DaoException e) {
+         System.out.println("Database Operation Failed! " + e);
+      }
+   }
+
+//   private void updateMovie() {
+//      try {
+//         System.out.print("Enter Movie ID (number): ");
+//         String usersInput = KB.nextLine();
+//         int id = Integer.parseInt(usersInput);
+//
+//         Movie movie = IMovieDao.findMovieById(id);
+//
+//         if (movie == null)
+//            System.out.println("Movie not found");
+//         else {
+//            System.out.print("Enter Movie Title: ");
+//            String title = KB.nextLine();
+//
+//            System.out.print("Enter Movie Year: ");
+//            int year = Integer.parseInt(KB.nextLine());
+//
+//            System.out.print("Enter Movie BoxOffice (in millions eg. €20.2): €");
+//            double boxOffice = Double.parseDouble(KB.nextLine());
+//
+//            System.out.print("Enter Movie Director: ");
+//            String director = KB.nextLine();
+//
+//            System.out.print("Enter Movie Lead Actor: ");
+//            String leadActor = KB.nextLine();
+//
+//            movie.setTitle(title);
+//            movie.setYear(year);
+//            movie.setBoxOffice(boxOffice);
+//            movie.setDirector(director);
+//            movie.setLeadActor(leadActor);
+//
+//            System.out.println("\nUpdating Movie...\n");
+//            IMovieDao.updateMovie(movie);
+//            System.out.println("Movie \"" + title + "\" has been updated!\n");
+//         }
+//      } catch (InputMismatchException | NumberFormatException e) {
+//         System.out.print("Invalid input - BoxOffice and Year must be a number");
+//      } catch (DaoException e) {
+//         System.out.println("Database Operation Failed! " + e);
+//      }
+//   }
 }

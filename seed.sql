@@ -1,12 +1,9 @@
-ALTER
-DATABASE oop_movie_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 CREATE TABLE movies
 (
     `id`        bigint unsigned NOT NULL AUTO_INCREMENT,
     `title`     varchar(255) NOT NULL,
     `year`      int          NOT NULL,
-    `boxOffice` int          NOT NULL,
+    `boxOffice` double(10, 1) NOT NULL,
     `director`  varchar(255) NOT NULL,
     `leadActor` varchar(255) NOT NULL,
     PRIMARY KEY (`id`)

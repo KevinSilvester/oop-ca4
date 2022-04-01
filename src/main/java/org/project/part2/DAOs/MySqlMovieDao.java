@@ -1,5 +1,6 @@
 package org.project.part2.DAOs;
 
+import org.javatuples.Pair;
 import org.project.part2.Exceptions.DaoException;
 import org.project.part2.DTOs.Movie;
 
@@ -11,13 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MySqlMovieDao extends MySqlDao implements MovieDaoInterface {
+
    @Override
-   public List<Movie> findAllMovies() throws DaoException {
+   public List<Pair<Integer, Movie>> findAllMovies() throws DaoException {
       PreparedStatement ps = null;
       ResultSet resultSet = null;
-      List<Movie> movieList = new ArrayList<>();
+      List<Pair<Integer, Movie>> movieList = new ArrayList<>();
 
-      try(Connection connection = this.getConnection()) {
+      try (Connection connection = this.getConnection()) {
          String query = "SELECT * FROM movies";
          ps = connection.prepareStatement(query);
          resultSet = ps.executeQuery();
@@ -29,7 +31,7 @@ public class MySqlMovieDao extends MySqlDao implements MovieDaoInterface {
             String director = resultSet.getString("director");
             String leadActor = resultSet.getString("leadActor");
             Movie m = new Movie(title, year, boxOffice, director, leadActor);
-            movieList.add(m);
+            movieList.add(new Pair<>(resultSet.getInt("id"), m));
          }
       } catch (SQLException e) {
          throw new DaoException("findAllMovies() " + e.getMessage());
@@ -46,7 +48,7 @@ public class MySqlMovieDao extends MySqlDao implements MovieDaoInterface {
       try (Connection connection = this.getConnection()) {
          String query = "SELECT * FROM movies WHERE id = ?";
          ps = connection.prepareStatement(query);
-         ps.setString(1, String.valueOf(id));
+         ps.setInt(1, id);
 
          resultSet = ps.executeQuery();
          if (resultSet.next()) {
@@ -62,5 +64,37 @@ public class MySqlMovieDao extends MySqlDao implements MovieDaoInterface {
          throw new DaoException("findMovieById() " + e.getMessage());
       }
       return movie;
+   }
+
+   @Override
+   public void deleteMovieById(int id) throws DaoException {
+      PreparedStatement ps = null;
+
+      try (Connection connection = this.getConnection()) {
+         String query = "DELETE FROM movies WHERE id = ?";
+         ps = connection.prepareStatement(query);
+         ps.setInt(1, id);
+         ps.executeUpdate();
+      } catch (SQLException e) {
+         throw new DaoException("deleteMovieById() " + e.getMessage());
+      }
+   }
+
+   @Override
+   public void addMovie(Movie m) throws DaoException {
+      PreparedStatement ps = null;
+
+      try (Connection connection = this.getConnection()) {
+         String query = "INSERT INTO movies (title, year, boxOffice, director, leadActor) VALUE (?, ?, ?, ?, ?)";
+         ps = connection.prepareStatement(query);
+         ps.setString(1, m.getTitle());
+         ps.setInt(2, m.getYear());
+         ps.setDouble(3, m.getBoxOffice());
+         ps.setString(4, m.getDirector());
+         ps.setString(5, m.getLeadActor());
+         ps.executeUpdate();
+      } catch (SQLException e) {
+         throw new DaoException("deleteMovieById() " + e.getMessage());
+      }
    }
 }

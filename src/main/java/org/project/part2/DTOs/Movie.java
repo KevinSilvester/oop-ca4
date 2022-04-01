@@ -74,6 +74,25 @@ public class Movie implements Comparable<Movie> {
       System.out.print(sb);
    }
 
+   public void display(int id) {
+      StringBuilder sb = new StringBuilder();
+      int idTab = -7;
+      int titleTab = -40;
+      int yearTab = -7;
+      int boxOfficeTab = -12;
+      int directorTab = -20;
+      int actorsTab = -18;
+
+      sb.append(String.format("%" + idTab + "d", id));
+      sb.append(String.format("%" + titleTab + "s", this.getTitle()));
+      sb.append(String.format("%" + yearTab + "d", this.getYear()));
+      sb.append(String.format("%" + boxOfficeTab + ".1f", this.getBoxOffice()));
+      sb.append(String.format("%" + directorTab + "s", this.getDirector()));
+      sb.append(String.format("%" + actorsTab + "s", this.getLeadActor()));
+      sb.append(String.format("%n"));
+      System.out.print(sb);
+   }
+
    @Override
    public boolean equals(Object o) {
       if (this == o) return true;
