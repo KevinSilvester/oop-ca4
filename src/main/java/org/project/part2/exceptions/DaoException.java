@@ -1,4 +1,4 @@
-package org.project.part2.Exceptions;
+package org.project.part2.exceptions;
 
 import java.sql.SQLException;
 

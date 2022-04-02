@@ -1,6 +1,6 @@
 package org.project.part2.DAOs;
 
-import org.project.part2.Exceptions.DaoException;
+import org.project.part2.exceptions.DaoException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

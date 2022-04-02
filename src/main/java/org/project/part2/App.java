@@ -1,21 +1,24 @@
 package org.project.part2;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.javatuples.Pair;
-import org.project.part2.Comparators.MapKeyComparator;
-import org.project.part2.Comparators.TwoFieldComparator;
-import org.project.part2.Comparators.YearComparator;
+import org.project.part2.comparators.MapKeyComparator;
+import org.project.part2.comparators.TwoFieldComparator;
+import org.project.part2.comparators.YearComparator;
 import org.project.part2.DAOs.MovieDaoInterface;
 import org.project.part2.DAOs.MySqlMovieDao;
 import org.project.part2.DTOs.Movie;
-import org.project.part2.Enumerators.SortType;
-import org.project.part2.Exceptions.DaoException;
+import org.project.part2.enumerators.SortType;
+import org.project.part2.exceptions.DaoException;
+import org.project.part2.jsonSerializers.MovieJsonSerializer;
 
-import java.sql.SQLOutput;
 import java.util.*;
 
 
 public class App {
    private static final Scanner KB = new Scanner(System.in);
+   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(Pair.class, new MovieJsonSerializer()).create();
    private static List<Movie> movieList;
    private static Map<Integer, Movie> movieHashMap;
    private static Map<String, String> stringTreeMap;
@@ -144,6 +147,9 @@ public class App {
             + "7. Find Movie by ID from Database\n"
             + "8. Delete Movie by ID from Database\n"
             + "9. Add Movie to Database\n"
+            + "10. Filter Movies from Database\n"
+            + "11. Display all Movies from Database as JSON\n"
+            + "12. Find Movie by ID from Database as JSON\n"
             + "13. Exit\n"
             + "Enter Option [1, 8]: ";
 
@@ -156,6 +162,9 @@ public class App {
       final int FIND_IN_DB       = 7;
       final int DELETE_IN_DB     = 8;
       final int ADD_IN_DB        = 9;
+      final int FILTER_DB        = 10;
+      final int DISPLAY_DB_JSON  = 11;
+      final int FIND_IN_DB_JSON  = 12;
       final int EXIT             = 13;
 
       int option = 0;
@@ -213,6 +222,21 @@ public class App {
                case ADD_IN_DB:
                   System.out.println("\nAdd Movie to Database");
                   addMovie();
+                  break;
+
+               case FILTER_DB:
+                  System.out.println("\nFilter Movies");
+//                  filterMovies();
+                  break;
+
+               case DISPLAY_DB_JSON:
+                  System.out.println("\nDisplay All Movies as JSON");
+                  displayDbJson();
+                  break;
+
+               case FIND_IN_DB_JSON:
+                  System.out.println("\nFind Movie by ID as JSON");
+                  findByIdJson();
                   break;
 
                case EXIT:
@@ -387,11 +411,11 @@ public class App {
          int id = Integer.parseInt(usersInput);
 
          System.out.println("\nFinding Movie...\n");
-         Movie movie = IMovieDao.findMovieById(id);
+         Pair<Integer, Movie> movie = IMovieDao.findMovieById(id);
 
          if (movie != null) {
             printTableHeader("Movie Found");
-            movie.display();
+            movie.getValue1().display();
          }
          else
             System.out.println("Movie not found");
@@ -408,14 +432,14 @@ public class App {
          String usersInput = KB.nextLine();
          int id = Integer.parseInt(usersInput);
 
-         Movie movie = IMovieDao.findMovieById(id);
+         Pair<Integer, Movie> movie = IMovieDao.findMovieById(id);
 
          if (movie == null)
             System.out.println("Movie not found");
          else {
             System.out.println("\nDeleting Movie...\n");
             IMovieDao.deleteMovieById(id);
-            System.out.println("Movie \"" + movie.getTitle() + "\" (id: " + id + ") has been deleted!");
+            System.out.println("Movie \"" + movie.getValue1().getTitle() + "\" (id: " + id + ") has been deleted!");
          }
       } catch (InputMismatchException | NumberFormatException e) {
          System.out.print("Invalid input - ID must be a number");
@@ -448,6 +472,44 @@ public class App {
          System.out.println("Movie \"" + title + "\" has been added!\n");
       } catch (InputMismatchException | NumberFormatException e) {
          System.out.print("Invalid input - BoxOffice and Year must be a number");
+      } catch (DaoException e) {
+         System.out.println("Database Operation Failed! " + e);
+      }
+   }
+
+   private void displayDbJson() {
+      try {
+         System.out.println("\nGetting All Movie...");
+         List<Pair<Integer, Movie>> movies = IMovieDao.findAllMovies();
+
+         if (movies.isEmpty())
+            System.out.println("No Movies found in Database");
+         else {
+            System.out.println("Movies in Database as JSON\n");
+            GSON.toJson(movies, System.out);
+         }
+      } catch (DaoException e) {
+         System.out.println("Database Operation Failed! " + e);
+      }
+   }
+
+   private void findByIdJson() {
+      try {
+         System.out.print("Enter Movie ID (number): ");
+         String usersInput = KB.nextLine();
+         int id = Integer.parseInt(usersInput);
+
+         System.out.println("\nFinding Movie...\n");
+         Pair<Integer, Movie> movie = IMovieDao.findMovieById(id);
+
+         if (movie != null) {
+            System.out.println("Movie Found\n");
+            GSON.toJson(movie, System.out);
+         }
+         else
+            System.out.println("Movie not found");
+      } catch (InputMismatchException | NumberFormatException e) {
+         System.out.print("Invalid input - ID must be a number");
       } catch (DaoException e) {
          System.out.println("Database Operation Failed! " + e);
       }

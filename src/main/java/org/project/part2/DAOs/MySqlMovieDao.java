@@ -1,7 +1,7 @@
 package org.project.part2.DAOs;
 
 import org.javatuples.Pair;
-import org.project.part2.Exceptions.DaoException;
+import org.project.part2.exceptions.DaoException;
 import org.project.part2.DTOs.Movie;
 
 import java.sql.Connection;
@@ -40,7 +40,7 @@ public class MySqlMovieDao extends MySqlDao implements MovieDaoInterface {
    }
 
    @Override
-   public Movie findMovieById(int id) throws DaoException {
+   public Pair<Integer, Movie> findMovieById(int id) throws DaoException {
       PreparedStatement ps = null;
       ResultSet resultSet = null;
       Movie movie = null;
@@ -63,7 +63,7 @@ public class MySqlMovieDao extends MySqlDao implements MovieDaoInterface {
       } catch (SQLException e) {
          throw new DaoException("findMovieById() " + e.getMessage());
       }
-      return movie;
+      return new Pair<>(id, movie);
    }
 
    @Override
@@ -79,6 +79,7 @@ public class MySqlMovieDao extends MySqlDao implements MovieDaoInterface {
          throw new DaoException("deleteMovieById() " + e.getMessage());
       }
    }
+
 
    @Override
    public void addMovie(Movie m) throws DaoException {
@@ -97,4 +98,6 @@ public class MySqlMovieDao extends MySqlDao implements MovieDaoInterface {
          throw new DaoException("deleteMovieById() " + e.getMessage());
       }
    }
+
+
 }

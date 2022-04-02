@@ -1,4 +1,4 @@
-package org.project.part2.Enumerators;
+package org.project.part2.enumerators;
 
 public enum SortType {
     Ascending(1, "Sort Ascending"),
