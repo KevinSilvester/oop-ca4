@@ -288,7 +288,7 @@ public class App {
                "Title", "Year", "BoxOffice", "Director", "Actors");
    }
 
-   private void displayList(List<Movie> list) {
+   public void displayList(List<Movie> list) {
       printTableTitle("Movie ArrayList");
       printTableHeader(null);
       list.forEach(Movie::display);
