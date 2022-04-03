@@ -1,3 +1,8 @@
+DROP DATABASE IF EXISTS `oop_movie_db`;
+CREATE DATABASE `oop_movie_db`;
+USE `oop_movie_db`;
+
+DROP TABLE IF EXISTS `movies`;
 CREATE TABLE movies
 (
     `id`        bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -9,8 +14,8 @@ CREATE TABLE movies
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-insert into movies (title, year, boxOffice, director, leadActor)
-values ('The Fast and the Furious', 2001, 207.3, 'Rob Cohen', 'Vin Diesel'),
+INSERT INTO movies (title, year, boxOffice, director, leadActor)
+VALUES ('The Fast and the Furious', 2001, 207.3, 'Rob Cohen', 'Vin Diesel'),
        ('2 Fast 2 Furious', 2003, 236.4, 'John Singleton', 'Paul Walker'),
        ('The Fast and the Furious: Tokyo Drift', 2006, 158.9, 'Justin Lin', 'Sung Kang'),
        ('Fast & Furious', 2009, 360.4, 'Justin Lin', 'Vin Diesel'),

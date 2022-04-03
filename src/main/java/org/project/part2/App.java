@@ -3,9 +3,7 @@ package org.project.part2;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.javatuples.Pair;
-import org.project.part2.comparators.MapKeyComparator;
-import org.project.part2.comparators.TwoFieldComparator;
-import org.project.part2.comparators.YearComparator;
+import org.project.part2.comparators.*;
 import org.project.part2.DAOs.MovieDaoInterface;
 import org.project.part2.DAOs.MySqlMovieDao;
 import org.project.part2.DTOs.Movie;
@@ -34,7 +32,7 @@ public class App {
    private void start() {
       System.out.println("Hello World");
       System.out.println("Project part 2 - CA5");
-      movieList = new ArrayList<>();
+      movieList = new ArrayList<>(10);
       movieHashMap = new HashMap<>();
       stringTreeMap = new TreeMap<>(new MapKeyComparator(SortType.Ascending));
       movieQueue = new PriorityQueue<>(10, new YearComparator(SortType.Ascending));
@@ -226,7 +224,7 @@ public class App {
 
                case FILTER_DB:
                   System.out.println("\nFilter Movies");
-//                  filterMovies();
+                  filterMoviesMenu();
                   break;
 
                case DISPLAY_DB_JSON:
@@ -515,46 +513,80 @@ public class App {
       }
    }
 
-//   private void updateMovie() {
-//      try {
-//         System.out.print("Enter Movie ID (number): ");
-//         String usersInput = KB.nextLine();
-//         int id = Integer.parseInt(usersInput);
-//
-//         Movie movie = IMovieDao.findMovieById(id);
-//
-//         if (movie == null)
-//            System.out.println("Movie not found");
-//         else {
-//            System.out.print("Enter Movie Title: ");
-//            String title = KB.nextLine();
-//
-//            System.out.print("Enter Movie Year: ");
-//            int year = Integer.parseInt(KB.nextLine());
-//
-//            System.out.print("Enter Movie BoxOffice (in millions eg. €20.2): €");
-//            double boxOffice = Double.parseDouble(KB.nextLine());
-//
-//            System.out.print("Enter Movie Director: ");
-//            String director = KB.nextLine();
-//
-//            System.out.print("Enter Movie Lead Actor: ");
-//            String leadActor = KB.nextLine();
-//
-//            movie.setTitle(title);
-//            movie.setYear(year);
-//            movie.setBoxOffice(boxOffice);
-//            movie.setDirector(director);
-//            movie.setLeadActor(leadActor);
-//
-//            System.out.println("\nUpdating Movie...\n");
-//            IMovieDao.updateMovie(movie);
-//            System.out.println("Movie \"" + title + "\" has been updated!\n");
-//         }
-//      } catch (InputMismatchException | NumberFormatException e) {
-//         System.out.print("Invalid input - BoxOffice and Year must be a number");
-//      } catch (DaoException e) {
-//         System.out.println("Database Operation Failed! " + e);
-//      }
-//   }
+   private void filterMoviesMenu() {
+      final String MENU = "\n*** MENU ***\n"
+            + "1. Filter Movies using YearComparator in Ascending Order\n"
+            + "2. Filter Movies using YearComparator in Descending Order\n"
+            + "3. Filter Movies using TwoFieldComparator in Ascending Order\n"
+            + "4. Filter Movies using TwoFieldComparator in Descending Order\n"
+            + "5. Exit\n"
+            + "Enter Option [1, 5]: ";
+
+      final int YEAR_COMPARATOR_ASC       = 1;
+      final int YEAR_COMPARATOR_DESC      = 2;
+      final int TWO_FIELD_COMPARATOR_ASC  = 3;
+      final int TWO_FIELD_COMPARATOR_DESC = 4;
+      final int EXIT                      = 5;
+
+      int option = 0;
+
+      do {
+         System.out.print("\n" + MENU);
+         try {
+            String usersInput = KB.nextLine();
+            option = Integer.parseInt(usersInput);
+            switch (option) {
+               case YEAR_COMPARATOR_ASC:
+                  System.out.println("\nFilter Movies using YearComparator (Ascending Order)");
+                  filterMovies(new PairYearComparator(SortType.Ascending));
+                  break;
+
+               case TWO_FIELD_COMPARATOR_ASC:
+                  System.out.println("\nFilter Movies using using YearComparator (Descending Order)");
+                  filterMovies(new PairYearComparator(SortType.Descending));
+                  break;
+
+               case YEAR_COMPARATOR_DESC:
+                  System.out.println("\nFilter Movies using using YearComparator (Ascending Order)");
+                  filterMovies(new PairTwoFieldComparator(SortType.Ascending));
+                  break;
+
+               case TWO_FIELD_COMPARATOR_DESC:
+                  System.out.println("\nFilter Movies using using YearComparator (Descending Order)");
+                  filterMovies(new PairTwoFieldComparator(SortType.Descending));
+                  break;
+
+               case EXIT:
+                  System.out.println("\nExit Menu option chosen");
+                  break;
+
+               default:
+                  System.out.print("\nInvalid option - please enter number in range");
+                  break;
+            }
+         } catch (InputMismatchException | NumberFormatException e) {
+            System.out.print("\nInvalid option - please enter number in range");
+         }
+      } while (option != EXIT);
+   }
+
+   private void filterMovies(Comparator<Pair<Integer, Movie>> comparator) {
+      try {
+         System.out.println("\nFiltering Movies...");
+         List<Pair<Integer, Movie>> movies = IMovieDao.findAllMovies();
+         movies.sort(comparator);
+
+         if (movies.isEmpty())
+            System.out.println("No Movies found in Database");
+         else {
+            printTableTitle("Movies in Database Filtered");
+            printTableHeader(null, true);
+            movies.forEach(pair -> pair.getValue1().display(pair.getValue0()));
+         }
+      } catch (InputMismatchException | NumberFormatException e) {
+         System.out.print("Invalid input - Year must be a number");
+      } catch (DaoException e) {
+         System.out.println("Database Operation Failed! " + e);
+      }
+   }
 }
