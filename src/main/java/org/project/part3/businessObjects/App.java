@@ -1,4 +1,4 @@
-package org.project.part3;
+package org.project.part3.businessObjects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,7 +9,7 @@ import org.project.part3.DAOs.MySqlMovieDao;
 import org.project.part3.DTOs.Movie;
 import org.project.part3.enumerators.SortType;
 import org.project.part3.exceptions.DaoException;
-import org.project.part3.jsonSerializers.MovieJsonSerializer;
+import org.project.part3.json.MovieJsonSerializer;
 
 import java.util.*;
 

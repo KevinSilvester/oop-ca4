@@ -1,4 +1,4 @@
-package org.project.part3.jsonSerializers;
+package org.project.part3.json;
 
 import com.google.gson.*;
 import org.javatuples.Pair;

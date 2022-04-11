@@ -14,8 +14,4 @@ public interface MovieDaoInterface {
    public void deleteMovieById(int id) throws DaoException;
 
    public void addMovie(Movie m) throws DaoException;
-//
-//   public void addNewMovie(Movie movie);
-//
-//   public List<Movie> findMovieUsingFilter();
 }

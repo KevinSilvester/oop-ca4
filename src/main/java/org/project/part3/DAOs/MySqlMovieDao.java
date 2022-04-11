@@ -46,9 +46,10 @@ public class MySqlMovieDao extends MySqlDao implements MovieDaoInterface {
       try (
          Connection connection = this.getConnection();
          PreparedStatement ps = connection.prepareStatement(query);
-         ResultSet resultSet = ps.executeQuery();
       ) {
          ps.setInt(1, id);
+
+         ResultSet resultSet = ps.executeQuery();
 
          if (resultSet.next()) {
             String title = resultSet.getString("title");
@@ -59,6 +60,7 @@ public class MySqlMovieDao extends MySqlDao implements MovieDaoInterface {
 
             movie = new Movie(title, year, boxOffice, director, leadActor);
          }
+         resultSet.close();
       } catch (SQLException e) {
          throw new DaoException("findMovieById() " + e.getMessage());
       }
