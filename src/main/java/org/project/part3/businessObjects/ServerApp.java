@@ -123,25 +123,27 @@ public class ServerApp {
                         socketWriter.println("Error: Database operation failed.");
                      }
                      break;
-                     case "DELETE_MOVIE":
-                        try {
-                           int id = Integer.parseInt(tokens[1]);
+                  case "DELETE_MOVIE":
+                     try {
+                        int id = Integer.parseInt(tokens[1]);
 
-                           Pair<Integer, Movie> movie = dao.findMovieById(id);
+                        Pair<Integer, Movie> movie = dao.findMovieById(id);
 
-                           if (movie.getValue1() == null)
-                              socketWriter.println("Error: Movie with id " + id + " not found.");
-                           else {
-                              dao.deleteMovieById(id);
-                              socketWriter.println("Success: Movie \"" + movie.getValue1().getTitle() + "\" (id: " + id + ") has been deleted!");
-                           }
-                        } catch (NumberFormatException e) {
-                           socketWriter.println("Error: 'id' must be a number.");
-                        } catch (DaoException e) {
-                           socketWriter.println("Error: Database operation failed.");
+                        if (movie.getValue1() == null)
+                           socketWriter.println("Error: Movie with id " + id + " not found.");
+                        else {
+                           dao.deleteMovieById(id);
+                           socketWriter.println("Success: Movie \"" + movie.getValue1().getTitle() + "\" (id: " + id + ") has been deleted!");
                         }
+                     } catch (NumberFormatException e) {
+                        socketWriter.println("Error: 'id' must be a number.");
+                     } catch (DaoException e) {
+                        socketWriter.println("Error: Database operation failed.");
+                     }
+                     break;
                   default:
                      socketWriter.println("Error: Unknown command.");
+                     break;
                }
                socketWriter.flush();
             }
