@@ -3,9 +3,11 @@ package org.project.part3.businessObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.javatuples.Pair;
+import org.project.part3.json.MovieJsonSerializer;
 import org.project.part3.json.MovieJsonDeserializer;
 import org.project.part3.DTOs.Movie;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -18,7 +20,8 @@ import java.util.regex.Pattern;
 public class ClientApp {
    private static final Scanner KB = new Scanner(System.in);
    private static final Pattern PATTERN = Pattern.compile("^[0-9]{1,}$");
-   private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Pair.class, new MovieJsonDeserializer()).create();
+   private static final Gson GSON_DESERIALIZER = new GsonBuilder().registerTypeAdapter(Pair.class, new MovieJsonDeserializer()).create();
+   private static final Gson GSON_SERIALIZER = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(Pair.class, new MovieJsonSerializer()).create();
 
    public static void main(String[] args) {
        ClientApp client = new ClientApp();
@@ -30,7 +33,8 @@ public class ClientApp {
       final int DISPLAY_ALL_MOVIES  = 2;
       final int ADD_MOVIE           = 3;
       final int DELETE_MOVIE_BY_ID  = 4;
-      final int EXIT                = 5;
+      final int SAVE_JSON_FILE      = 5;
+      final int EXIT                = 6;
       boolean exit = false;
 
       try {
@@ -57,7 +61,7 @@ public class ClientApp {
                      if (movieJson.startsWith("Error"))
                         System.out.println("Client message: " + movieJson);
                      else {
-                        Pair<Integer, Movie> movie = GSON.fromJson(movieJson, Pair.class);
+                        Pair<Integer, Movie> movie = GSON_DESERIALIZER.fromJson(movieJson, Pair.class);
                         printTableTitle("Movie Found");
                         printTableHeader(null, true);
                         movie.getValue1().display(movie.getValue0());
@@ -76,7 +80,7 @@ public class ClientApp {
                   else {
                      printTableTitle("All Movies");
                      printTableHeader(null, true);
-                     Pair<Integer, Movie>[] movies = GSON.fromJson(moviesJson, Pair[].class);
+                     Pair<Integer, Movie>[] movies = GSON_DESERIALIZER.fromJson(moviesJson, Pair[].class);
                      Arrays.stream(movies).forEach(pair -> pair.getValue1().display(pair.getValue0()));
                   }
                   break;
@@ -85,7 +89,7 @@ public class ClientApp {
                   Movie movie = getMovieDetails();
 
                   if (movie != null) {
-                     movieJson = GSON.toJson(movie, Movie.class);
+                     movieJson = GSON_DESERIALIZER.toJson(movie, Movie.class);
                      System.out.println("Client message: Adding movie...");
                      socketWriter.println("ADD_MOVIE;" + movieJson);
                      String response = socketReader.nextLine();
@@ -104,6 +108,28 @@ public class ClientApp {
                      System.out.println("Client message: " + response);
                   } else
                      System.out.println("\nClient message: Invalid ID");
+                  break;
+               case SAVE_JSON_FILE:
+                  System.out.print("\nClient message: Enter the file name: ");
+                  String fileName = KB.nextLine();
+
+                  if (fileName.endsWith(".json")) {
+                     socketWriter.println("DISPLAY_ALL_MOVIES;");
+                     moviesJson = socketReader.nextLine();
+
+                     if (moviesJson.startsWith("Error"))
+                        System.out.println("Client message: " + moviesJson);
+                     else {
+                        System.out.println("Client message: Saving JSON file...");
+                        FileWriter fw = new FileWriter(fileName, false);
+                        GSON_SERIALIZER.toJson(GSON_DESERIALIZER.fromJson(moviesJson, Pair[].class), fw);
+                        fw.flush();
+                        fw.close();
+                        System.out.println("Client message: JSON saved to " + fileName + " successfully!");
+                     }
+                  }
+                  else
+                     System.out.println("\nClient message: File name must end with .json");
                   break;
                case EXIT:
                   exit = true;
@@ -133,8 +159,9 @@ public class ClientApp {
             + "2. Display all Movies\n"
             + "3. Add Movie\n"
             + "4. Delete Movie by ID\n"
-            + "5. Exit\n"
-            + "Enter Option [1, 5]: ";
+            + "5. Save all Movies to JSON file\n"
+            + "6. Exit\n"
+            + "Enter Option [1, 6]: ";
 
       System.out.print("\n" + MENU);
       return Integer.parseInt(KB.nextLine());

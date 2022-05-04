@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "title": "The Fast and the Furious",
+    "year": 2001,
+    "boxOffice": 207.3,
+    "director": "Rob Cohen",
+    "leadActor": "Vin Diesel"
+  },
+  {
+    "id": 2,
+    "title": "2 Fast 2 Furious",
+    "year": 2003,
+    "boxOffice": 236.4,
+    "director": "John Singleton",
+    "leadActor": "Paul Walker"
+  },
+  {
+    "id": 3,
+    "title": "The Fast and the Furious: Tokyo Drift",
+    "year": 2006,
+    "boxOffice": 158.9,
+    "director": "Justin Lin",
+    "leadActor": "Sung Kang"
+  },
+  {
+    "id": 4,
+    "title": "Fast \u0026 Furious",
+    "year": 2009,
+    "boxOffice": 360.4,
+    "director": "Justin Lin",
+    "leadActor": "Vin Diesel"
+  },
+  {
+    "id": 5,
+    "title": "Fast Five",
+    "year": 2011,
+    "boxOffice": 626.1,
+    "director": "Justin Lin",
+    "leadActor": "Vin Diesel"
+  },
+  {
+    "id": 6,
+    "title": "Fast \u0026 Furious 6",
+    "year": 2013,
+    "boxOffice": 788.7,
+    "director": "Justin Lin",
+    "leadActor": "Vin Diesel"
+  }
+]
